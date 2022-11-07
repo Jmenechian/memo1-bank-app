@@ -1,6 +1,7 @@
 package com.aninfo;
 
 import com.aninfo.model.Account;
+import com.aninfo.model.Transaction;
 import com.aninfo.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -65,14 +66,33 @@ public class Memo1BankApp {
 		accountService.deleteById(cbu);
 	}
 
-	@PutMapping("/accounts/{cbu}/withdraw")
-	public Account withdraw(@PathVariable Long cbu, @RequestParam Double sum) {
-		return accountService.withdraw(cbu, sum);
+	@PostMapping("/accounts/deposit")
+	@ResponseStatus(HttpStatus.CREATED)
+	public Transaction createDeposit(@RequestBody Transaction transaction){
+		return accountService.createDeposit(transaction);
 	}
 
-	@PutMapping("/accounts/{cbu}/deposit")
-	public Account deposit(@PathVariable Long cbu, @RequestParam Double sum) {
-		return accountService.deposit(cbu, sum);
+	@PostMapping("/accounts/withdraw")
+	@ResponseStatus(HttpStatus.CREATED)
+	public Transaction createWithdraw(@RequestBody Transaction transaction){
+		return accountService.createWithdraw(transaction);
+	}
+
+	@GetMapping("/accounts/transactions")
+	public Collection<Transaction> getTransactionByCbu(@RequestParam Long cbu) {
+		return accountService.getTransactionsFrom(cbu);
+	}
+
+	@GetMapping("/transactions/{transactionId}")
+	public Optional<Transaction> getTransactionByTransactionId(@PathVariable Long transactionId){
+		Optional<Transaction> transaction = accountService.getTransaction(transactionId);
+
+		return transaction;
+	}
+
+	@DeleteMapping("/transactions/{transactionId}")
+	public void deleteTransaction(@PathVariable Long transactionId){
+		accountService.deleteTransaction(transactionId);
 	}
 
 	@Bean
